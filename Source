@@ -1,4 +1,4 @@
--- Fr0stByt3Z Library (With Header, Close, Minimize, Dropdown, Input)
+-- Fr0stByt3Z Library
 local UILibrary = {}
 
 local TweenService = game:GetService("TweenService")
@@ -19,7 +19,6 @@ MainFrame.ClipsDescendants = true
 MainFrame.Draggable = true
 MainFrame.Active = true
 MainFrame.Selectable = true
-
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
 
 -- Header
@@ -53,7 +52,7 @@ TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 TitleLabel.TextScaled = true
 TitleLabel.ZIndex = 3
 
--- Close/Minimize Buttons
+-- Close and Minimize
 local function createHeaderButton(name, text, offset)
 	local btn = Instance.new("TextButton", Header)
 	btn.Name = name
@@ -88,7 +87,11 @@ Content.Size = UDim2.new(0.75, -10, 1, -80)
 Content.Position = UDim2.new(0.25, 10, 0, 70)
 Content.BackgroundTransparency = 1
 
--- Close and Minimize Functionality
+-- Button Actions
+CloseButton.MouseButton1Click:Connect(function()
+	MainFrame:Destroy()
+end)
+
 local isMinimized = false
 MinimizeButton.MouseButton1Click:Connect(function()
 	isMinimized = not isMinimized
@@ -96,10 +99,19 @@ MinimizeButton.MouseButton1Click:Connect(function()
 	TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = goal}):Play()
 end)
 
-CloseButton.MouseButton1Click:Connect(function()
-	MainFrame:Destroy()
-end)
+-- UI Icon function
+local function createIcon(parent, name)
+	local icon = Instance.new("ImageLabel", parent)
+	icon.Name = name .. "_Icon"
+	icon.Size = UDim2.new(0, 20, 0, 20)
+	icon.Position = UDim2.new(0, 5, 0.5, -10)
+	icon.BackgroundTransparency = 1
+	icon.ImageColor3 = Color3.fromRGB(200, 200, 200)
+	icon.ZIndex = 2
+	return icon
+end
 
+-- Public API
 function UILibrary:CreateTab(name)
 	local Tab = {}
 
@@ -129,9 +141,7 @@ function UILibrary:CreateTab(name)
 
 	TabButton.MouseButton1Click:Connect(function()
 		for _, v in pairs(Content:GetChildren()) do
-			if v:IsA("ScrollingFrame") then
-				v.Visible = false
-			end
+			if v:IsA("ScrollingFrame") then v.Visible = false end
 		end
 		TabFrame.Visible = true
 	end)
@@ -164,31 +174,33 @@ function UILibrary:CreateTab(name)
 		Layout.Padding = UDim.new(0, 6)
 		Layout.SortOrder = Enum.SortOrder.LayoutOrder
 
+		local function wrapControl(ctrl, iconUrl)
+			createIcon(ctrl, "Feature").Image = iconUrl
+			ctrl.Position = UDim2.new(0, 30, 0, 0)
+			ctrl.Size = UDim2.new(1, -40, 0, 30)
+		end
+
 		function Section:AddButton(text, callback)
 			local Btn = Instance.new("TextButton", SectionFrame)
 			Btn.Text = text
 			Btn.Font = Enum.Font.Gotham
-			Btn.Size = UDim2.new(1, -10, 0, 30)
-			Btn.Position = UDim2.new(0, 5, 0, 0)
 			Btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 			Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Btn.BorderSizePixel = 0
 			Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
-			Btn.MouseButton1Click:Connect(function()
-				pcall(callback)
-			end)
+			wrapControl(Btn, "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/fingerprint.svg?sanitize=true")
+			Btn.MouseButton1Click:Connect(function() pcall(callback) end)
 		end
 
 		function Section:AddToggle(text, default, callback)
 			local Toggle = Instance.new("TextButton", SectionFrame)
 			Toggle.Text = text
 			Toggle.Font = Enum.Font.Gotham
-			Toggle.Size = UDim2.new(1, -10, 0, 30)
-			Toggle.Position = UDim2.new(0, 5, 0, 0)
 			Toggle.BackgroundColor3 = default and Color3.fromRGB(60, 100, 60) or Color3.fromRGB(45, 45, 45)
 			Toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Toggle.BorderSizePixel = 0
 			Instance.new("UICorner", Toggle).CornerRadius = UDim.new(0, 6)
+			wrapControl(Toggle, "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/toggle-right.svg?sanitize=true")
 
 			local state = default
 			Toggle.MouseButton1Click:Connect(function()
@@ -202,13 +214,13 @@ function UILibrary:CreateTab(name)
 
 		function Section:AddInput(placeholder, callback)
 			local Input = Instance.new("TextBox", SectionFrame)
-			Input.Size = UDim2.new(1, -10, 0, 30)
 			Input.PlaceholderText = placeholder
 			Input.Font = Enum.Font.Gotham
 			Input.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Input.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 			Input.BorderSizePixel = 0
 			Instance.new("UICorner", Input).CornerRadius = UDim.new(0, 6)
+			wrapControl(Input, "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/italic.svg?sanitize=true")
 
 			Input.FocusLost:Connect(function(enter)
 				if enter then
@@ -219,35 +231,30 @@ function UILibrary:CreateTab(name)
 
 		function Section:AddDropdown(options, callback)
 			local Dropdown = Instance.new("TextButton", SectionFrame)
-			Dropdown.Size = UDim2.new(1, -10, 0, 30)
 			Dropdown.Text = "Select..."
 			Dropdown.Font = Enum.Font.Gotham
 			Dropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Dropdown.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 			Dropdown.BorderSizePixel = 0
 			Instance.new("UICorner", Dropdown).CornerRadius = UDim.new(0, 6)
+			wrapControl(Dropdown, "https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/chevron-down.svg?sanitize=true")
 
 			local List = Instance.new("Frame", SectionFrame)
 			List.Size = UDim2.new(1, -10, 0, #options * 28)
-			List.Position = UDim2.new(0, 5, 0, 0)
 			List.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 			List.Visible = false
 			Instance.new("UICorner", List).CornerRadius = UDim.new(0, 6)
+			local layout = Instance.new("UIListLayout", List)
 
-			local listLayout = Instance.new("UIListLayout", List)
-			listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-			for _, option in pairs(options) do
-				local opt = Instance.new("TextButton", List)
-				opt.Size = UDim2.new(1, 0, 0, 28)
-				opt.Text = option
-				opt.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-				opt.TextColor3 = Color3.fromRGB(255, 255, 255)
-				opt.Font = Enum.Font.Gotham
-				opt.BorderSizePixel = 0
-				Instance.new("UICorner", opt).CornerRadius = UDim.new(0, 4)
-
-				opt.MouseButton1Click:Connect(function()
+			for _, option in ipairs(options) do
+				local Opt = Instance.new("TextButton", List)
+				Opt.Size = UDim2.new(1, 0, 0, 28)
+				Opt.Text = option
+				Opt.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+				Opt.TextColor3 = Color3.fromRGB(255, 255, 255)
+				Opt.Font = Enum.Font.Gotham
+				Instance.new("UICorner", Opt).CornerRadius = UDim.new(0, 4)
+				Opt.MouseButton1Click:Connect(function()
 					List.Visible = false
 					Dropdown.Text = option
 					pcall(callback, option)
@@ -265,12 +272,12 @@ function UILibrary:CreateTab(name)
 	return Tab
 end
 
-function UILibrary:GetIcon()
-	return Icon
-end
-
 function UILibrary:SetTitle(text)
 	TitleLabel.Text = text
+end
+
+function UILibrary:GetIcon()
+	return Icon
 end
 
 return UILibrary
