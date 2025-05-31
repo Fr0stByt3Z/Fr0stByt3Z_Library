@@ -14,7 +14,6 @@ MainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.BorderSizePixel = 0
 MainFrame.ClipsDescendants = true
-
 MainFrame.Draggable = true
 MainFrame.Active = true
 MainFrame.Selectable = true
@@ -22,13 +21,25 @@ MainFrame.Selectable = true
 local UICorner = Instance.new("UICorner", MainFrame)
 UICorner.CornerRadius = UDim.new(0, 8)
 
--- Icon (customizable)
+-- Icon
 local Icon = Instance.new("ImageLabel", MainFrame)
 Icon.Name = "Icon"
-Icon.Size = UDim2.new(0, 36, 0, 36)
+Icon.Size = UDim2.new(0, 32, 0, 32)
 Icon.Position = UDim2.new(0, 10, 0, 10)
 Icon.BackgroundTransparency = 1
-Icon.Image = "rbxassetid://82803140266076" -- default icon
+Icon.Image = "rbxassetid://82803140266076" -- Default Icon
+
+-- Title
+local TitleLabel = Instance.new("TextLabel", MainFrame)
+TitleLabel.Name = "Title"
+TitleLabel.Position = UDim2.new(0, 50, 0, 10)
+TitleLabel.Size = UDim2.new(1, -60, 0, 32)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "Fr0stByt3Z Library"
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.TextSize = 20
 
 -- Tab Buttons Container
 local TabButtons = Instance.new("Frame", MainFrame)
@@ -47,8 +58,6 @@ local Content = Instance.new("Frame", MainFrame)
 Content.Size = UDim2.new(1, -140, 1, -10)
 Content.Position = UDim2.new(0, 140, 0, 5)
 Content.BackgroundTransparency = 1
-
-local Tabs = {}
 
 function UILibrary:CreateTab(name)
 	local Tab = {}
@@ -86,7 +95,6 @@ function UILibrary:CreateTab(name)
 		TabFrame.Visible = true
 	end)
 
-	-- Show first tab by default
 	if #Content:GetChildren() == 0 then
 		TabFrame.Visible = true
 	end
@@ -99,9 +107,7 @@ function UILibrary:CreateTab(name)
 		SectionFrame.Size = UDim2.new(1, -10, 0, 40)
 		SectionFrame.AutomaticSize = Enum.AutomaticSize.Y
 		SectionFrame.BorderSizePixel = 0
-
-		local Corner = Instance.new("UICorner", SectionFrame)
-		Corner.CornerRadius = UDim.new(0, 6)
+		Instance.new("UICorner", SectionFrame).CornerRadius = UDim.new(0, 6)
 
 		local Label = Instance.new("TextLabel", SectionFrame)
 		Label.Text = title
@@ -159,9 +165,13 @@ function UILibrary:CreateTab(name)
 	return Tab
 end
 
--- Expose icon so user can modify it:
+-- API for customization
 function UILibrary:GetIcon()
 	return MainFrame:FindFirstChild("Icon")
+end
+
+function UILibrary:SetTitle(text)
+	TitleLabel.Text = text
 end
 
 return UILibrary
