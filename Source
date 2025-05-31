@@ -1,15 +1,13 @@
 local UILibrary = {}
 
--- Services
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local PlayerGui = Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Starter GUI
-local ScreenGui = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"))
-ScreenGui.Name = "CustomUILibrary"
+local ScreenGui = Instance.new("ScreenGui", PlayerGui)
+ScreenGui.Name = "Fr0stByt3Z_UILibrary"
 ScreenGui.ResetOnSpawn = false
 
--- Main Frame
 local MainFrame = Instance.new("Frame", ScreenGui)
 MainFrame.Size = UDim2.new(0, 600, 0, 400)
 MainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
@@ -17,35 +15,47 @@ MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.BorderSizePixel = 0
 MainFrame.ClipsDescendants = true
 
+MainFrame.Draggable = true
+MainFrame.Active = true
+MainFrame.Selectable = true
+
 local UICorner = Instance.new("UICorner", MainFrame)
 UICorner.CornerRadius = UDim.new(0, 8)
 
--- Tab Buttons Panel
+-- Icon (customizable)
+local Icon = Instance.new("ImageLabel", MainFrame)
+Icon.Name = "Icon"
+Icon.Size = UDim2.new(0, 36, 0, 36)
+Icon.Position = UDim2.new(0, 10, 0, 10)
+Icon.BackgroundTransparency = 1
+Icon.Image = "rbxassetid://82803140266076" -- default icon
+
+-- Tab Buttons Container
 local TabButtons = Instance.new("Frame", MainFrame)
 TabButtons.Size = UDim2.new(0, 130, 1, 0)
+TabButtons.Position = UDim2.new(0, 0, 0, 0)
 TabButtons.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 TabButtons.BorderSizePixel = 0
-
 Instance.new("UICorner", TabButtons).CornerRadius = UDim.new(0, 6)
 
 local UIListLayout = Instance.new("UIListLayout", TabButtons)
 UIListLayout.Padding = UDim.new(0, 4)
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
--- Content Panel
+-- Content Container
 local Content = Instance.new("Frame", MainFrame)
 Content.Size = UDim2.new(1, -140, 1, -10)
 Content.Position = UDim2.new(0, 140, 0, 5)
 Content.BackgroundTransparency = 1
 
--- Tabs Storage
 local Tabs = {}
 
--- Create Tab
 function UILibrary:CreateTab(name)
 	local Tab = {}
+
 	local TabButton = Instance.new("TextButton", TabButtons)
 	TabButton.Size = UDim2.new(1, -10, 0, 30)
+	TabButton.Position = UDim2.new(0, 5, 0, 0)
 	TabButton.Text = name
 	TabButton.Font = Enum.Font.Gotham
 	TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -54,40 +64,41 @@ function UILibrary:CreateTab(name)
 	Instance.new("UICorner", TabButton).CornerRadius = UDim.new(0, 6)
 
 	local TabFrame = Instance.new("ScrollingFrame", Content)
-	TabFrame.Visible = false
 	TabFrame.Size = UDim2.new(1, 0, 1, 0)
 	TabFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 	TabFrame.BackgroundTransparency = 1
 	TabFrame.ScrollBarThickness = 4
+	TabFrame.Visible = false
 
 	local Layout = Instance.new("UIListLayout", TabFrame)
 	Layout.Padding = UDim.new(0, 8)
 	Layout.SortOrder = Enum.SortOrder.LayoutOrder
-
 	Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
 		TabFrame.CanvasSize = UDim2.new(0, 0, 0, Layout.AbsoluteContentSize.Y + 10)
 	end)
 
 	TabButton.MouseButton1Click:Connect(function()
 		for _, v in pairs(Content:GetChildren()) do
-			if v:IsA("ScrollingFrame") then v.Visible = false end
+			if v:IsA("ScrollingFrame") then
+				v.Visible = false
+			end
 		end
 		TabFrame.Visible = true
 	end)
 
-	-- Default to first tab open
-	if #Content:GetChildren() == 1 then
+	-- Show first tab by default
+	if #Content:GetChildren() == 0 then
 		TabFrame.Visible = true
 	end
 
 	function Tab:CreateSection(title)
 		local Section = {}
+
 		local SectionFrame = Instance.new("Frame", TabFrame)
 		SectionFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 		SectionFrame.Size = UDim2.new(1, -10, 0, 40)
 		SectionFrame.AutomaticSize = Enum.AutomaticSize.Y
 		SectionFrame.BorderSizePixel = 0
-		SectionFrame.Name = title
 
 		local Corner = Instance.new("UICorner", SectionFrame)
 		Corner.CornerRadius = UDim.new(0, 6)
@@ -116,7 +127,6 @@ function UILibrary:CreateTab(name)
 			Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Btn.BorderSizePixel = 0
 			Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
-
 			Btn.MouseButton1Click:Connect(function()
 				pcall(callback)
 			end)
@@ -143,87 +153,15 @@ function UILibrary:CreateTab(name)
 			end)
 		end
 
-		function Section:AddLabel(text)
-			local Lbl = Instance.new("TextLabel", SectionFrame)
-			Lbl.Text = text
-			Lbl.Font = Enum.Font.Gotham
-			Lbl.Size = UDim2.new(1, -10, 0, 25)
-			Lbl.Position = UDim2.new(0, 5, 0, 0)
-			Lbl.BackgroundTransparency = 1
-			Lbl.TextColor3 = Color3.fromRGB(200, 200, 200)
-			Lbl.TextXAlignment = Enum.TextXAlignment.Left
-		end
-
-		function Section:AddTextbox(placeholder, callback)
-			local Box = Instance.new("TextBox", SectionFrame)
-			Box.PlaceholderText = placeholder
-			Box.Font = Enum.Font.Gotham
-			Box.Size = UDim2.new(1, -10, 0, 30)
-			Box.Position = UDim2.new(0, 5, 0, 0)
-			Box.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-			Box.TextColor3 = Color3.fromRGB(255, 255, 255)
-			Box.BorderSizePixel = 0
-			Instance.new("UICorner", Box).CornerRadius = UDim.new(0, 6)
-
-			Box.FocusLost:Connect(function(enterPressed)
-				if enterPressed then
-					pcall(callback, Box.Text)
-				end
-			end)
-		end
-
-		function Section:AddDropdown(name, list, callback)
-			local Drop = Instance.new("TextButton", SectionFrame)
-			Drop.Text = name
-			Drop.Font = Enum.Font.Gotham
-			Drop.Size = UDim2.new(1, -10, 0, 30)
-			Drop.Position = UDim2.new(0, 5, 0, 0)
-			Drop.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-			Drop.TextColor3 = Color3.fromRGB(255, 255, 255)
-			Drop.BorderSizePixel = 0
-			Instance.new("UICorner", Drop).CornerRadius = UDim.new(0, 6)
-
-			local Open = false
-			local Options = {}
-
-			local Holder = Instance.new("Frame", SectionFrame)
-			Holder.BackgroundTransparency = 1
-			Holder.Size = UDim2.new(1, 0, 0, 0)
-			Holder.Visible = false
-
-			local ListLayout = Instance.new("UIListLayout", Holder)
-			ListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-			for _, item in ipairs(list) do
-				local Option = Instance.new("TextButton", Holder)
-				Option.Text = item
-				Option.Font = Enum.Font.Gotham
-				Option.Size = UDim2.new(1, -10, 0, 25)
-				Option.Position = UDim2.new(0, 5, 0, 0)
-				Option.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
-				Option.TextColor3 = Color3.fromRGB(255, 255, 255)
-				Option.BorderSizePixel = 0
-				Instance.new("UICorner", Option).CornerRadius = UDim.new(0, 6)
-
-				Option.MouseButton1Click:Connect(function()
-					Drop.Text = item
-					pcall(callback, item)
-					Holder.Visible = false
-					Open = false
-				end)
-			end
-
-			Drop.MouseButton1Click:Connect(function()
-				Open = not Open
-				Holder.Visible = Open
-			end)
-		end
-
 		return Section
 	end
 
-	table.insert(Tabs, Tab)
 	return Tab
+end
+
+-- Expose icon so user can modify it:
+function UILibrary:GetIcon()
+	return MainFrame:FindFirstChild("Icon")
 end
 
 return UILibrary
