@@ -1,0 +1,37 @@
+local UILibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Fr0stByt3Z/Fr0stByt3Z_Library/refs/heads/main/Source"))()
+
+-- Set the title and icon
+UILibrary:SetTitle("Fr0stByt3Z Library Example Script")
+UILibrary:GetIcon().Image = "rbxassetid://82803140266076"
+
+-- Create a tab
+local tab = UILibrary:CreateTab("Main")
+
+-- Create a section
+local section = tab:CreateSection("Controls")
+
+-- Add a button
+section:AddButton("Click Me", function()
+	print("Button was clicked!")
+end)
+
+-- Add a toggle
+section:AddToggle("Toggle Option", false, function(state)
+	print("Toggle is now:", state)
+end)
+
+-- Create another section
+local settings = tab:CreateSection("Settings")
+
+-- Add more buttons and toggles for demonstration
+settings:AddButton("Do Something", function()
+	print("Something executed.")
+end)
+
+settings:AddToggle("Enable Feature", true, function(enabled)
+	if enabled then
+		print("Feature Enabled")
+	else
+		print("Feature Disabled")
+	end
+end)
