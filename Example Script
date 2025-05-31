@@ -10,6 +10,7 @@ local tab = UILibrary:CreateTab("Main")
 -- Create a "Controls" section
 local section = tab:CreateSection("Controls")
 
+section:AddLabel("This is a label for controls")
 section:AddButton("Click Me", function()
 	print("Button was clicked!")
 end)
@@ -29,6 +30,7 @@ end)
 -- Create a "Settings" section
 local settings = tab:CreateSection("Settings")
 
+settings:AddLabel("Settings label text here")
 settings:AddButton("Do Something", function()
 	print("Something executed.")
 end)
