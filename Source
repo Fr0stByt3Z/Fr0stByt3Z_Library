@@ -8,9 +8,9 @@ local ScreenGui = Instance.new("ScreenGui", PlayerGui)
 ScreenGui.Name = "Fr0stByt3Z_UILibrary"
 ScreenGui.ResetOnSpawn = false
 
--- Main UI Frame (scaled for both PC and Mobile)
+-- Main UI Frame (scaled)
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0.7, 0, 0.7, 0) -- Scaled size
+MainFrame.Size = UDim2.new(0.7, 0, 0.8, 0) -- Taller height
 MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
@@ -20,23 +20,32 @@ MainFrame.Draggable = true
 MainFrame.Active = true
 MainFrame.Selectable = true
 
-local UICorner = Instance.new("UICorner", MainFrame)
-UICorner.CornerRadius = UDim.new(0, 8)
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
 
--- Icon
-local Icon = Instance.new("ImageLabel", MainFrame)
+-- Header Frame (holds icon + title)
+local Header = Instance.new("Frame", MainFrame)
+Header.Name = "Header"
+Header.Size = UDim2.new(1, -20, 0, 48)
+Header.Position = UDim2.new(0, 10, 0, 10)
+Header.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Header.BorderSizePixel = 0
+Instance.new("UICorner", Header).CornerRadius = UDim.new(1, 999)
+
+-- Icon inside header
+local Icon = Instance.new("ImageLabel", Header)
 Icon.Name = "Icon"
 Icon.Size = UDim2.new(0, 32, 0, 32)
-Icon.Position = UDim2.new(0, 10, 0, 10)
+Icon.Position = UDim2.new(0, 8, 0.5, 0)
+Icon.AnchorPoint = Vector2.new(0, 0.5)
 Icon.BackgroundTransparency = 1
 Icon.Image = "rbxassetid://82803140266076"
 
--- Title
-local TitleLabel = Instance.new("TextLabel", MainFrame)
+-- Title inside header
+local TitleLabel = Instance.new("TextLabel", Header)
 TitleLabel.Name = "Title"
-TitleLabel.Position = UDim2.new(0.5, 0, 0, 10)
-TitleLabel.AnchorPoint = Vector2.new(0.5, 0)
-TitleLabel.Size = UDim2.new(1, -60, 0, 32)
+TitleLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+TitleLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+TitleLabel.Size = UDim2.new(1, -60, 1, 0)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Text = "Fr0stByt3Z Library"
 TitleLabel.Font = Enum.Font.GothamBold
@@ -46,8 +55,8 @@ TitleLabel.TextScaled = true
 
 -- Tab Buttons Container
 local TabButtons = Instance.new("Frame", MainFrame)
-TabButtons.Size = UDim2.new(0.25, 0, 1, 0)
-TabButtons.Position = UDim2.new(0, 0, 0, 0)
+TabButtons.Size = UDim2.new(0.25, 0, 1, -70)
+TabButtons.Position = UDim2.new(0, 0, 0, 60)
 TabButtons.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 TabButtons.BorderSizePixel = 0
 Instance.new("UICorner", TabButtons).CornerRadius = UDim.new(0, 6)
@@ -58,8 +67,8 @@ UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 -- Content Container
 local Content = Instance.new("Frame", MainFrame)
-Content.Size = UDim2.new(0.75, -10, 1, -10)
-Content.Position = UDim2.new(0.25, 10, 0, 5)
+Content.Size = UDim2.new(0.75, -10, 1, -70)
+Content.Position = UDim2.new(0.25, 10, 0, 60)
 Content.BackgroundTransparency = 1
 
 function UILibrary:CreateTab(name)
@@ -170,7 +179,7 @@ end
 
 -- API for customization
 function UILibrary:GetIcon()
-	return MainFrame:FindFirstChild("Icon")
+	return MainFrame:FindFirstChild("Header"):FindFirstChild("Icon")
 end
 
 function UILibrary:SetTitle(text)
