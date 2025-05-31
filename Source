@@ -1,3 +1,4 @@
+-- Fr0stByt3Z Library (With Header, Close, Minimize, Dropdown, Input)
 local UILibrary = {}
 
 local TweenService = game:GetService("TweenService")
@@ -10,7 +11,7 @@ ScreenGui.ResetOnSpawn = false
 
 local MainFrame = Instance.new("Frame", ScreenGui)
 MainFrame.Size = UDim2.new(0.7, 0, 0.9, 0)
-MainFrame.Position = UDim2.new(0.5, -MainFrame.Size.X.Offset / 2, 0.5, -MainFrame.Size.Y.Offset / 2)
+MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
 MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.BorderSizePixel = 0
@@ -21,14 +22,13 @@ MainFrame.Selectable = true
 
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
 
--- Top Header (Pill Shape)
+-- Header
 local Header = Instance.new("Frame", MainFrame)
 Header.Size = UDim2.new(1, -20, 0, 56)
 Header.Position = UDim2.new(0, 10, 0, 10)
 Header.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 Header.BorderSizePixel = 0
 Header.ZIndex = 2
-
 Instance.new("UICorner", Header).CornerRadius = UDim.new(1, 100)
 
 -- Icon
@@ -43,17 +43,35 @@ Icon.ZIndex = 3
 -- Title
 local TitleLabel = Instance.new("TextLabel", Header)
 TitleLabel.Name = "Title"
-TitleLabel.Size = UDim2.new(1, -60, 1, 0)
+TitleLabel.Size = UDim2.new(1, -120, 1, 0)
 TitleLabel.Position = UDim2.new(0, 50, 0, 0)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Text = "Fr0stByt3Z Library"
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TitleLabel.TextXAlignment = Enum.TextXAlignment.Center
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 TitleLabel.TextScaled = true
 TitleLabel.ZIndex = 3
 
--- Tab Buttons Container
+-- Close/Minimize Buttons
+local function createHeaderButton(name, text, offset)
+	local btn = Instance.new("TextButton", Header)
+	btn.Name = name
+	btn.Size = UDim2.new(0, 30, 0, 30)
+	btn.Position = UDim2.new(1, -offset, 0.5, -15)
+	btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.Text = text
+	btn.Font = Enum.Font.GothamBold
+	btn.ZIndex = 3
+	btn.AutoButtonColor = true
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(1, 0)
+	return btn
+end
+
+local CloseButton = createHeaderButton("Close", "X", 40)
+local MinimizeButton = createHeaderButton("Minimize", "_", 75)
+
 local TabButtons = Instance.new("Frame", MainFrame)
 TabButtons.Size = UDim2.new(0.25, 0, 1, -80)
 TabButtons.Position = UDim2.new(0, 0, 0, 70)
@@ -65,11 +83,22 @@ local UIListLayout = Instance.new("UIListLayout", TabButtons)
 UIListLayout.Padding = UDim.new(0, 4)
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
--- Content Container
 local Content = Instance.new("Frame", MainFrame)
 Content.Size = UDim2.new(0.75, -10, 1, -80)
 Content.Position = UDim2.new(0.25, 10, 0, 70)
 Content.BackgroundTransparency = 1
+
+-- Close and Minimize Functionality
+local isMinimized = false
+MinimizeButton.MouseButton1Click:Connect(function()
+	isMinimized = not isMinimized
+	local goal = isMinimized and UDim2.new(0.7, 0, 0, 70) or UDim2.new(0.7, 0, 0.9, 0)
+	TweenService:Create(MainFrame, TweenInfo.new(0.3), {Size = goal}):Play()
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+	MainFrame:Destroy()
+end)
 
 function UILibrary:CreateTab(name)
 	local Tab = {}
@@ -171,13 +200,71 @@ function UILibrary:CreateTab(name)
 			end)
 		end
 
+		function Section:AddInput(placeholder, callback)
+			local Input = Instance.new("TextBox", SectionFrame)
+			Input.Size = UDim2.new(1, -10, 0, 30)
+			Input.PlaceholderText = placeholder
+			Input.Font = Enum.Font.Gotham
+			Input.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Input.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+			Input.BorderSizePixel = 0
+			Instance.new("UICorner", Input).CornerRadius = UDim.new(0, 6)
+
+			Input.FocusLost:Connect(function(enter)
+				if enter then
+					pcall(callback, Input.Text)
+				end
+			end)
+		end
+
+		function Section:AddDropdown(options, callback)
+			local Dropdown = Instance.new("TextButton", SectionFrame)
+			Dropdown.Size = UDim2.new(1, -10, 0, 30)
+			Dropdown.Text = "Select..."
+			Dropdown.Font = Enum.Font.Gotham
+			Dropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Dropdown.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+			Dropdown.BorderSizePixel = 0
+			Instance.new("UICorner", Dropdown).CornerRadius = UDim.new(0, 6)
+
+			local List = Instance.new("Frame", SectionFrame)
+			List.Size = UDim2.new(1, -10, 0, #options * 28)
+			List.Position = UDim2.new(0, 5, 0, 0)
+			List.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+			List.Visible = false
+			Instance.new("UICorner", List).CornerRadius = UDim.new(0, 6)
+
+			local listLayout = Instance.new("UIListLayout", List)
+			listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+			for _, option in pairs(options) do
+				local opt = Instance.new("TextButton", List)
+				opt.Size = UDim2.new(1, 0, 0, 28)
+				opt.Text = option
+				opt.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+				opt.TextColor3 = Color3.fromRGB(255, 255, 255)
+				opt.Font = Enum.Font.Gotham
+				opt.BorderSizePixel = 0
+				Instance.new("UICorner", opt).CornerRadius = UDim.new(0, 4)
+
+				opt.MouseButton1Click:Connect(function()
+					List.Visible = false
+					Dropdown.Text = option
+					pcall(callback, option)
+				end)
+			end
+
+			Dropdown.MouseButton1Click:Connect(function()
+				List.Visible = not List.Visible
+			end)
+		end
+
 		return Section
 	end
 
 	return Tab
 end
 
--- API
 function UILibrary:GetIcon()
 	return Icon
 end
