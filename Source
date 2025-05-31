@@ -8,9 +8,11 @@ local ScreenGui = Instance.new("ScreenGui", PlayerGui)
 ScreenGui.Name = "Fr0stByt3Z_UILibrary"
 ScreenGui.ResetOnSpawn = false
 
+-- Main UI Frame (scaled for both PC and Mobile)
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 600, 0, 400)
-MainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
+MainFrame.Size = UDim2.new(0.7, 0, 0.7, 0) -- Scaled size
+MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 MainFrame.BorderSizePixel = 0
 MainFrame.ClipsDescendants = true
@@ -27,23 +29,24 @@ Icon.Name = "Icon"
 Icon.Size = UDim2.new(0, 32, 0, 32)
 Icon.Position = UDim2.new(0, 10, 0, 10)
 Icon.BackgroundTransparency = 1
-Icon.Image = "rbxassetid://82803140266076" -- Default Icon
+Icon.Image = "rbxassetid://82803140266076"
 
 -- Title
 local TitleLabel = Instance.new("TextLabel", MainFrame)
 TitleLabel.Name = "Title"
-TitleLabel.Position = UDim2.new(0, 50, 0, 10)
+TitleLabel.Position = UDim2.new(0.5, 0, 0, 10)
+TitleLabel.AnchorPoint = Vector2.new(0.5, 0)
 TitleLabel.Size = UDim2.new(1, -60, 0, 32)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Text = "Fr0stByt3Z Library"
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-TitleLabel.TextSize = 20
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Center
+TitleLabel.TextScaled = true
 
 -- Tab Buttons Container
 local TabButtons = Instance.new("Frame", MainFrame)
-TabButtons.Size = UDim2.new(0, 130, 1, 0)
+TabButtons.Size = UDim2.new(0.25, 0, 1, 0)
 TabButtons.Position = UDim2.new(0, 0, 0, 0)
 TabButtons.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 TabButtons.BorderSizePixel = 0
@@ -55,8 +58,8 @@ UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 -- Content Container
 local Content = Instance.new("Frame", MainFrame)
-Content.Size = UDim2.new(1, -140, 1, -10)
-Content.Position = UDim2.new(0, 140, 0, 5)
+Content.Size = UDim2.new(0.75, -10, 1, -10)
+Content.Position = UDim2.new(0.25, 10, 0, 5)
 Content.BackgroundTransparency = 1
 
 function UILibrary:CreateTab(name)
