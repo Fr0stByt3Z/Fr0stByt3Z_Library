@@ -289,36 +289,35 @@ function UILibrary:CreateTab(name)
 -- AddSlider: interactive horizontal slider with value display
 function Section:AddSlider(min, max, default, callback)
     local Frame = Instance.new("Frame", SectionFrame)
-    Frame.Size = UDim2.new(1, -10, 0, 40)
-    Frame.BackgroundTransparency = 1
+    Frame.Size = UDim2.new(1, -10, 0, 50)
     Frame.Position = UDim2.new(0, 5, 0, 0)
+    Frame.BackgroundTransparency = 1
+
+    local Label = Instance.new("TextLabel", Frame)
+    Label.Size = UDim2.new(1, 0, 0, 20)
+    Label.Position = UDim2.new(0, 0, 0, 0)
+    Label.BackgroundTransparency = 1
+    Label.Text = "Slider: " .. tostring(default)
+    Label.Font = Enum.Font.Gotham
+    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Label.TextSize = 14
+    Label.TextXAlignment = Enum.TextXAlignment.Left
 
     local SliderBar = Instance.new("Frame", Frame)
-    SliderBar.Size = UDim2.new(1, -60, 0, 6)
-    SliderBar.Position = UDim2.new(0, 0, 0.5, -3)
+    SliderBar.Size = UDim2.new(1, 0, 0, 16)
+    SliderBar.Position = UDim2.new(0, 0, 0, 25)
     SliderBar.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
     SliderBar.BorderSizePixel = 0
-    Instance.new("UICorner", SliderBar).CornerRadius = UDim.new(0, 3)
+    Instance.new("UICorner", SliderBar).CornerRadius = UDim.new(0, 6)
 
     local Fill = Instance.new("Frame", SliderBar)
     Fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
     Fill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
     Fill.BorderSizePixel = 0
-    Fill.Name = "Fill"
-    Instance.new("UICorner", Fill).CornerRadius = UDim.new(0, 3)
-
-    local ValueLabel = Instance.new("TextLabel", Frame)
-    ValueLabel.Size = UDim2.new(0, 50, 0, 25)
-    ValueLabel.Position = UDim2.new(1, -50, 0, 0)
-    ValueLabel.Text = tostring(default)
-    ValueLabel.Font = Enum.Font.Gotham
-    ValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ValueLabel.BackgroundTransparency = 1
-    ValueLabel.TextSize = 14
+    Instance.new("UICorner", Fill).CornerRadius = UDim.new(0, 6)
 
     local dragging = false
     local UIS = game:GetService("UserInputService")
-    local Camera = workspace.CurrentCamera
 
     local function updateFromMouse()
         local mouseX = UIS:GetMouseLocation().X
@@ -329,7 +328,7 @@ function Section:AddSlider(min, max, default, callback)
         local value = math.floor(min + (max - min) * percent + 0.5)
 
         Fill.Size = UDim2.new(percent, 0, 1, 0)
-        ValueLabel.Text = tostring(value)
+        Label.Text = "Slider: " .. tostring(value)
         pcall(callback, value)
     end
 
