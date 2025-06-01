@@ -27,6 +27,12 @@ section:AddDropdown({"Option A", "Option B", "Option C"}, function(choice)
 	print("Selected:", choice)
 end)
 
+section:AddSlider(0, 100, 50, function(value)
+	print("Slider Value:", value)
+end)
+
+section:AddImage("rbxassetid://82803140266076", UDim2.new(1, -10, 0, 120))
+
 -- Create a "Settings" section
 local settings = tab:CreateSection("Settings")
 
