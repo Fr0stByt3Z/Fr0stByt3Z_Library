@@ -286,6 +286,76 @@ function UILibrary:CreateTab(name)
             end)
         end
 
+        -- AddSlider: interactive horizontal slider with value display
+function Section:AddSlider(min, max, default, callback)
+    local Frame = Instance.new("Frame", SectionFrame)
+    Frame.Size = UDim2.new(1, -10, 0, 40)
+    Frame.BackgroundTransparency = 1
+    Frame.Position = UDim2.new(0, 5, 0, 0)
+
+    local SliderBar = Instance.new("Frame", Frame)
+    SliderBar.Size = UDim2.new(1, -60, 0, 6)
+    SliderBar.Position = UDim2.new(0, 0, 0.5, -3)
+    SliderBar.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    SliderBar.BorderSizePixel = 0
+    Instance.new("UICorner", SliderBar).CornerRadius = UDim.new(0, 3)
+
+    local Fill = Instance.new("Frame", SliderBar)
+    Fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+    Fill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+    Fill.BorderSizePixel = 0
+    Fill.Name = "Fill"
+    Instance.new("UICorner", Fill).CornerRadius = UDim.new(0, 3)
+
+    local ValueLabel = Instance.new("TextLabel", Frame)
+    ValueLabel.Size = UDim2.new(0, 50, 0, 25)
+    ValueLabel.Position = UDim2.new(1, -50, 0, 0)
+    ValueLabel.Text = tostring(default)
+    ValueLabel.Font = Enum.Font.Gotham
+    ValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ValueLabel.BackgroundTransparency = 1
+    ValueLabel.TextSize = 14
+
+    local dragging = false
+
+    local function updateInput(input)
+        local pos = UDim2.new(math.clamp((input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1), 0, 1, 0)
+        Fill.Size = UDim2.new(pos.X.Scale, 0, 1, 0)
+        local val = math.floor((min + (max - min) * pos.X.Scale) + 0.5)
+        ValueLabel.Text = tostring(val)
+        pcall(callback, val)
+    end
+
+    SliderBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            updateInput(input)
+        end
+    end)
+
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            updateInput(input)
+        end
+    end)
+
+    game:GetService("UserInputService").InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+end
+
+-- AddImage: show an image inside the section
+function Section:AddImage(imageIdOrUrl, size)
+    local Img = Instance.new("ImageLabel", SectionFrame)
+    Img.Size = size or UDim2.new(1, -10, 0, 100)
+    Img.Position = UDim2.new(0, 5, 0, 0)
+    Img.Image = imageIdOrUrl
+    Img.BackgroundTransparency = 1
+    Img.ScaleType = Enum.ScaleType.Fit
+end
+
         return Section
     end
 
