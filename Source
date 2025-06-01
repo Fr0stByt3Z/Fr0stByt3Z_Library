@@ -288,68 +288,69 @@ function UILibrary:CreateTab(name)
 
 -- AddSlider: interactive horizontal slider with value display
 function Section:AddSlider(min, max, default, callback)
-    local Frame = Instance.new("Frame", SectionFrame)
-    Frame.Size = UDim2.new(1, -10, 0, 50)
-    Frame.Position = UDim2.new(0, 5, 0, 0)
-    Frame.BackgroundTransparency = 1
+	local Frame = Instance.new("Frame", SectionFrame)
+	Frame.Size = UDim2.new(1, -10, 0, 50)
+	Frame.Position = UDim2.new(0, 5, 0, 0)
+	Frame.BackgroundTransparency = 1
 
-    local Label = Instance.new("TextLabel", Frame)
-    Label.Size = UDim2.new(1, 0, 0, 20)
-    Label.Position = UDim2.new(0, 0, 0, 0)
-    Label.BackgroundTransparency = 1
-    Label.Text = "Slider: " .. tostring(default)
-    Label.Font = Enum.Font.Gotham
-    Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Label.TextSize = 14
-    Label.TextXAlignment = Enum.TextXAlignment.Left
+	local Label = Instance.new("TextLabel", Frame)
+	Label.Size = UDim2.new(1, 0, 0, 20)
+	Label.Position = UDim2.new(0, 0, 0, 0)
+	Label.BackgroundTransparency = 1
+	Label.Text = "Slider: " .. tostring(default)
+	Label.Font = Enum.Font.Gotham
+	Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Label.TextSize = 14
+	Label.TextXAlignment = Enum.TextXAlignment.Left
 
-    local SliderBar = Instance.new("Frame", Frame)
-    SliderBar.Size = UDim2.new(1, 0, 0, 16)
-    SliderBar.Position = UDim2.new(0, 0, 0, 25)
-    SliderBar.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-    SliderBar.BorderSizePixel = 0
-    Instance.new("UICorner", SliderBar).CornerRadius = UDim.new(0, 6)
+	local SliderBar = Instance.new("Frame", Frame)
+	SliderBar.Size = UDim2.new(1, 0, 0, 16)
+	SliderBar.Position = UDim2.new(0, 0, 0, 25)
+	SliderBar.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+	SliderBar.BorderSizePixel = 0
+	SliderBar.ClipsDescendants = true
+	Instance.new("UICorner", SliderBar).CornerRadius = UDim.new(0, 6)
 
-    local Fill = Instance.new("Frame", SliderBar)
-    Fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
-    Fill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-    Fill.BorderSizePixel = 0
-    Instance.new("UICorner", Fill).CornerRadius = UDim.new(0, 6)
+	local Fill = Instance.new("Frame", SliderBar)
+	Fill.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+	Fill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+	Fill.BorderSizePixel = 0
+	Instance.new("UICorner", Fill).CornerRadius = UDim.new(0, 6)
 
-    local dragging = false
-    local UIS = game:GetService("UserInputService")
+	local dragging = false
+	local UIS = game:GetService("UserInputService")
+	local RunService = game:GetService("RunService")
 
-    local function updateFromMouse()
-        local mouseX = UIS:GetMouseLocation().X
-        local barStart = SliderBar.AbsolutePosition.X
-        local barSize = SliderBar.AbsoluteSize.X
-        local relativeX = math.clamp(mouseX - barStart, 0, barSize)
-        local percent = relativeX / barSize
-        local value = math.floor(min + (max - min) * percent + 0.5)
+	local function updateFromInput(input)
+		local rel = math.clamp((input.Position.X - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
+		local value = math.floor(min + (max - min) * rel + 0.5)
 
-        Fill.Size = UDim2.new(percent, 0, 1, 0)
-        Label.Text = "Slider: " .. tostring(value)
-        pcall(callback, value)
-    end
+		Fill.Size = UDim2.new(rel, 0, 1, 0)
+		Label.Text = "Slider: " .. tostring(value)
+		pcall(callback, value)
+	end
 
-    SliderBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            updateFromMouse()
-        end
-    end)
+	SliderBar.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = true
+			updateFromInput(input)
 
-    UIS.InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            updateFromMouse()
-        end
-    end)
+			local conn
+			conn = RunService.RenderStepped:Connect(function()
+				if not dragging then
+					conn:Disconnect()
+				else
+					updateFromInput(UIS:GetMouseLocation())
+				end
+			end)
+		end
+	end)
 
-    UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
+	UIS.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragging = false
+		end
+	end)
 end
 
 -- AddImage: show an image inside the section
