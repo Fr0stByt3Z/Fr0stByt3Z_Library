@@ -19,7 +19,7 @@ section:AddToggle("Toggle Option", false, function(state)
 	print("Toggle is now:", state)
 end)
 
-section:AddInput("Enter some text...", function(text)
+section:AddInput("Enter some text...", "Text Lol", function(text)
 	print("You entered:", text)
 end)
 
