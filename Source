@@ -191,6 +191,20 @@ function UILibrary:CreateTab(name)
 			Txt.Position = UDim2.new(0, 5, 0, 0)
 			Txt.TextXAlignment = Enum.TextXAlignment.Left
 			Txt.TextSize = 14
+
+			local labelObject = {}
+
+			function labelObject:Set(newText)
+				Txt.Text = newText
+			end
+
+			function labelObject:Get()
+				return Txt.Text
+			end
+
+			labelObject.TextLabel = Txt
+
+			return labelObject
 		end
 
 		-- AddButton: darker gray background
