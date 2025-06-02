@@ -232,7 +232,9 @@ function UILibrary:CreateTab(name)
 		end
 
 		-- AddInput: dark blue-gray background
-		function Section:AddInput(placeholder, callback)
+		function Section:AddInput(placeholder, custtxt, callback)
+			custtxt = custtxt or "TextBox"
+
 			local Input = Instance.new("TextBox", SectionFrame)
 			Input.Size = UDim2.new(1, -10, 0, 30)
 			Input.PlaceholderText = placeholder
@@ -240,6 +242,9 @@ function UILibrary:CreateTab(name)
 			Input.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Input.BackgroundColor3 = Color3.fromRGB(45, 45, 70)
 			Input.BorderSizePixel = 0
+
+			Input.Text = custtxt
+
 			Instance.new("UICorner", Input).CornerRadius = UDim.new(0, 6)
 
 			Input.FocusLost:Connect(function(enter)
@@ -390,14 +395,29 @@ function UILibrary:CreateTab(name)
 			return sliderObject
 		end
 
-		-- AddImage: show an image inside the section
+		-- AddImage: show an image inside the section, with Set/Get methods
 		function Section:AddImage(imageIdOrUrl, size)
-			local Img = Instance.new("ImageLabel", SectionFrame)
+			local Img = Instance.new("ImageLabel")
 			Img.Size = size or UDim2.new(1, -10, 0, 100)
 			Img.Position = UDim2.new(0, 5, 0, 0)
-			Img.Image = imageIdOrUrl
 			Img.BackgroundTransparency = 1
 			Img.ScaleType = Enum.ScaleType.Fit
+			Img.Image = imageIdOrUrl or ""
+			Img.Parent = SectionFrame
+
+			local imageObject = {}
+
+			function imageObject:Set(newImage)
+				Img.Image = newImage
+			end
+
+			function imageObject:Get()
+				return Img.Image
+			end
+
+			imageObject.ImageLabel = Img
+
+			return imageObject
 		end
 
 		return Section
